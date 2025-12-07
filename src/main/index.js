@@ -402,8 +402,27 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle("changeNoteTitle", (event, from, to) => {
-    fs.renameSync(from, path.join(path.dirname(from), to));
-    return path.join(path.dirname(from), to);
+    const newPath = path.join(path.dirname(from), to);
+    
+    // Check if target file already exists and is different from source
+    if (fs.existsSync(newPath) && from !== newPath) {
+      throw new Error('FILE_EXISTS');
+    }
+    
+    fs.renameSync(from, newPath);
+    return newPath;
+  });
+
+  ipcMain.handle("checkFileExists", (event, filePath) => {
+    // Check if there are any special paths
+    if (filePath.includes("../")){
+      return false
+    }
+    if (filePath.includes("..\\")){
+      return false
+    }
+    
+    return fs.existsSync(filePath);
   });
 
   ipcMain.handle("deleteNote", (event, path) => {

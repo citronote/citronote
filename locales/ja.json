@@ -25,7 +25,8 @@
 
   "editor": {
     "cannot_open": "Citronoteで開けないファイルです",
-    "open_in_external": "外部アプリで開く"
+    "open_in_external": "外部アプリで開く",
+    "note_exists_error": "同じ名前のノートが既に存在します"
   },
 
   "create_folder": {
