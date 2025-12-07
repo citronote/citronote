@@ -494,7 +494,7 @@ export default {
           this.openFile(res)
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
         })
     },
     addNotebook() {

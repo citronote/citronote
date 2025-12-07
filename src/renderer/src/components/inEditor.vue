@@ -2,12 +2,16 @@
   <div class="font-bold mb-1 pb-0.5 mr-2 text-white" >
     <input
       type="text"
+      @input="validateNoteTitle"
       @change="changeNoteTitle"
       v-model="notetitle"
+      :class="{'border-2 border-red': titleError}"
       style="outline: none !important; caret-color: white"
       class="bg-transparent pb-1 text-2xl flex-grow w-full focus:bg-hover focus:mb-1.5 focus:text-[1.4rem] focus:rounded-xl focus:py-2 focus:pl-4 focus:pr-[-1rem]"
+      ref="noteTitleInput"
       placeholder="Note Name"
     />
+    <div v-if="titleError" class="text-red-500 text-xs mt-1">{{ i18n.editor.note_exists_error }}</div>
   </div>
 
   <div id="md-preview" v-html="parsedMd" v-show="isPreviewMd" class="mdcontent whitespace-pre-line flex flex-col break-all"></div>
@@ -74,7 +78,9 @@ export default {
       easyMDE: null,
       textarea: "",
       parsedMd: "",
-      isPreviewMd: false
+      isPreviewMd: false,
+      titleError: false,
+      validationTimeout: null
     }
   },
   methods: {
@@ -103,7 +109,37 @@ export default {
         element.style.display = 'block';
       });
     },
+    async validateNoteTitle() {
+      const extension = this.path.replace(/^.*[\\/]/, '').match(/[^.]+$/s)[0];
+      const newFileName = this.notetitle + "." + extension;
+      const newPath = this.path.replace(/[^\\/]*$/, '') + newFileName;
+      
+      // Check if it's the same as current file (case-insensitive check)
+      if (newPath.toLowerCase() === this.path.toLowerCase()) {
+        this.titleError = false;
+        return;
+      }
+      
+      // Check if file exists
+      try {
+        const exists = await window.api.checkFileExists(newPath);
+        this.titleError = exists;
+      } catch (error) {
+        console.error(error)
+        this.titleError = false;
+      }
+    },
     changeNoteTitle() {
+      if (this.titleError) {
+        if (this.path.replace(/^.*[\\/]/, '').split('.').slice(0, -1).join('.').startsWith('$untitled-')){
+          this.notetitle = ""
+        } else {
+          this.notetitle = this.path.replace(/^.*[\\/]/, '').split('.').slice(0, -1).join('.')
+        }
+        this.titleError = false;
+        document.activeElement.blur();
+        return;
+      }
       this.$emit("changeNoteTitle", this.notetitle);
     },
     openInExternal(){
