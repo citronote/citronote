@@ -23,7 +23,8 @@
 
   "editor": {
     "cannot_open": "This file cannot be opened with Citronote",
-    "open_in_external": "Open in external app"
+    "open_in_external": "Open in external app",
+    "note_exists_error": "A note with this name already exists"
   },
 
   "create_folder": {

@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld("api", {
   saveFile: (path, text) => ipcRenderer.invoke("saveFile", path, text),
   createNote: (path) => ipcRenderer.invoke("createNote", path),
   changeNoteTitle: (from, to) => ipcRenderer.invoke("changeNoteTitle", from, to),
+  checkFileExists: (path) => ipcRenderer.invoke("checkFileExists", path),
   deleteNote: (path) => ipcRenderer.invoke("deleteNote", path),
   getPreferences: (path) => ipcRenderer.invoke("getPreferences", path),
   setPreferences: (path, data) => ipcRenderer.invoke("setPreferences", path, data),
